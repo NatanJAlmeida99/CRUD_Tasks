@@ -51,7 +51,7 @@ app.put("/tasks/:id", (req, res) => {
   const index = tasks.findIndex((task) => task.id === Number(id));
 
   if (index < 0) {
-    return res.status(404).json({ erro: "Usuário não encontrado" });
+    return res.status(404).json({ erro: "Task não encontrada" });
   }
 
   tasks[index] = {
@@ -61,9 +61,22 @@ app.put("/tasks/:id", (req, res) => {
   };
 
   return res.json({
-    mensagem: "Usuário ataualizado com sucesso!",
+    mensagem: "Task ataualizado com sucesso!",
     task: tasks[index],
   });
+});
+
+// DELETE
+app.delete("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  const index = tasks.findIndex((task) => task.id === Number(id));
+
+  if (index < 0) {
+    return res.status(404).json({ erro: "Task não encontrada" });
+  }
+
+  tasks.splice(index, 1);
+  return res.json({ mensagem: "Task deletada com sucesso! "})
 });
 
 const PORT = 3000;
