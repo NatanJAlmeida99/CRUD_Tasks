@@ -3,7 +3,7 @@ import express from "express";
 const app = express();
 app.use(express.json());
 
-let users = [];
+let tasks = [];
 
 // CREATE
 app.post("/tasks", (req, res) => {
@@ -11,14 +11,14 @@ app.post("/tasks", (req, res) => {
   const now = new Date();
 
   const newTask = {
-    id: users.length + 1,
+    id: tasks.length + 1,
     title,
     description,
     completed_at: null,
     created_at: now,
     upddated_at: now,
   };
-  users.push(newTask);
+  tasks.push(newTask);
 
   return res.status(201).json({
     mensagem: "Task cadastrada com sucesso!",
@@ -29,4 +29,22 @@ app.post("/tasks", (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor com Express rodando na porta ${PORT} 🚀`);
+});
+
+// READ
+app.get("/tasks", (req, res) => {
+  const { search } = req.query;
+
+  if (!search) {
+    return res.json(tasks);
+  }
+
+  const term = search.toLowerCase();
+
+  const resultado = tasks.filter(
+    (task) =>
+      task.title.toLowerCase().includes(term) ||
+      task.description.toLowerCase().includes(term),
+  );
+  res.json(resultado);
 });
