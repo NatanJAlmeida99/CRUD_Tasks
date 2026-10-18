@@ -76,7 +76,23 @@ app.delete("/tasks/:id", (req, res) => {
   }
 
   tasks.splice(index, 1);
-  return res.json({ mensagem: "Task deletada com sucesso! "})
+  return res.json({ mensagem: "Task deletada com sucesso! " });
+});
+
+// PATCH
+app.patch("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+  const index = tasks.findIndex((task) => task.id === Number(id));
+
+  if (index < 0) {
+    return res.status(404).json({ erro: "Task não encontrada" });
+  }
+
+  const task = tasks[index];
+
+  task.completed_at = task.completed_at ? "Completada" : "Não completa";
+
+  return res.status(200).json(task);
 });
 
 const PORT = 3000;
