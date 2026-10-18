@@ -1,12 +1,8 @@
-import express from "express";
-
-const app = express();
-app.use(express.json());
-
 let tasks = [];
 
-// CREATE
-app.post("/tasks", (req, res) => {
+const findTaskIndex = (id) => tasks.findIndex((task) => task.id === Number(id));
+
+export const createTask = (req, res) => {
   const { title, description } = req.body;
   const now = new Date();
 
@@ -16,7 +12,7 @@ app.post("/tasks", (req, res) => {
     description,
     completed_at: null,
     created_at: now,
-    upddated_at: now,
+    updated_at: now,
   };
   tasks.push(newTask);
 
@@ -24,10 +20,9 @@ app.post("/tasks", (req, res) => {
     mensagem: "Task cadastrada com sucesso!",
     task: newTask,
   });
-});
+};
 
-// READ
-app.get("/tasks", (req, res) => {
+export const readTasks = (req, res) => {
   const { search } = req.query;
 
   if (!search) {
@@ -35,54 +30,55 @@ app.get("/tasks", (req, res) => {
   }
 
   const term = search.toLowerCase();
-
   const resultado = tasks.filter(
     (task) =>
       task.title.toLowerCase().includes(term) ||
       task.description.toLowerCase().includes(term),
   );
-  res.json(resultado);
-});
 
-// UPDATE
-app.put("/tasks/:id", (req, res) => {
+  res.json(resultado);
+};
+
+export const updateTask = (req, res) => {
   const { id } = req.params;
   const { title, description } = req.body;
-  const index = tasks.findIndex((task) => task.id === Number(id));
+
+  const index = findTaskIndex(id);
 
   if (index < 0) {
-    return res.status(404).json({ erro: "Task não encontrada" });
+    return res.status(404).json({
+      erro: "Task não encontrada",
+    });
   }
 
   tasks[index] = {
-    id: Number(id),
+    ...tasks[index],
     title,
     description,
+    updated_at: new Date(),
   };
 
   return res.json({
-    mensagem: "Task ataualizado com sucesso!",
+    mensagem: "Task atualizada com sucesso!",
     task: tasks[index],
   });
-});
+};
 
-// DELETE
-app.delete("/tasks/:id", (req, res) => {
+export const deleteTask = (req, res) => {
   const { id } = req.params;
-  const index = tasks.findIndex((task) => task.id === Number(id));
+  const index = findTaskIndex(id);
 
   if (index < 0) {
-    return res.status(404).json({ erro: "Task não encontrada" });
+    return res.status(404).json({ erro: "Task não encotrada" });
   }
 
   tasks.splice(index, 1);
-  return res.json({ mensagem: "Task deletada com sucesso! " });
-});
+  return res.json({ messagem: "Task deletada com sucesso! " });
+};
 
-// PATCH
-app.patch("/tasks/:id", (req, res) => {
+export const finishTask = (req, res) => {
   const { id } = req.params;
-  const index = tasks.findIndex((task) => task.id === Number(id));
+  const index = findTaskIndex(id);
 
   if (index < 0) {
     return res.status(404).json({ erro: "Task não encontrada" });
@@ -90,12 +86,7 @@ app.patch("/tasks/:id", (req, res) => {
 
   const task = tasks[index];
 
-  task.completed_at = task.completed_at ? "Completada" : "Não completa";
+  task.completed_at = task.completed_at ? "Completada" : "Não completada";
 
   return res.status(200).json(task);
-});
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor com Express rodando na porta ${PORT} 🚀`);
-});
+};
