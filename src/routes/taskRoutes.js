@@ -7,11 +7,13 @@ import {
   updateTask,
 } from "../controllers/taskController.js";
 
+import { validarDadosTask } from "../middlewares/validarTask.js"
+
 const router = express.Router();
 
-router.post("/", createTask);
+router.post("/", validarDadosTask, createTask);
 router.get("/", readTasks);
-router.put("/:id", updateTask);
+router.put("/:id", validarDadosTask, updateTask);
 router.delete("/:id", deleteTask);
 router.patch("/:id", finishTask);
 
