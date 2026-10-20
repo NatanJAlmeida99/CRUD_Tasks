@@ -17,3 +17,5 @@ app.listen(PORT, async () => {
   await initDb();
   console.log(`Servidor com Express rodando na porta ${PORT} 🚀`);
 });
+
+export default app;
